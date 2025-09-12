@@ -12,13 +12,15 @@ export function saveScreenshot(req, res) {
   try {
     let { parentTitle, title, timestamp, screenshot, captions } = req.body;
 
-    console.log({
-      parentTitle,
-      title,
-      timestamp,
-      screenshot: screenshot.slice(0, 20),
-      captions,
-    });
+    console.log(
+      JSON.stringify({
+        parentTitle,
+        title,
+        timestamp,
+        screenshot: screenshot.slice(0, 20),
+        captions,
+      })
+    );
     if (!parentTitle || !title || !timestamp || !screenshot) {
       return res
         .status(400)
@@ -51,7 +53,7 @@ export function saveScreenshot(req, res) {
 
     // Insert into notes
     let notesContent = fs.readFileSync(notesFile, "utf-8");
-    const mdEntry = `\nTimestamp: ${timestamp}\n![Screenshot](${imageFile})\n\n`;
+    const mdEntry = `\nTimestamp: ${timestamp}\n![Screenshot](/${cleanTitle}/${imageFile})\n\n`;
 
     if (captions?.trim()) {
       const idx = notesContent.indexOf(captions);

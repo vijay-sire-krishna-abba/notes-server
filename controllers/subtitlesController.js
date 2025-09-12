@@ -69,10 +69,7 @@ export function saveSubtitles(req, res) {
       `# ${title}\n\n ${finalText}`
     );
     if (!fs.existsSync(notesFileStructured)) {
-      fs.writeFileSync(
-        notesFileStructured,
-        `\n \`\`\`\n../${title}/\n\`\`\`\n\n`
-      );
+      fs.writeFileSync(notesFileStructured, "");
     }
 
     // Append subtitles
