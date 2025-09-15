@@ -63,7 +63,7 @@ export function saveScreenshot(req, res) {
             "  \n" +
             mdEntry +
             "\n" +
-            notesContent.slice(idx + captions.length)
+            notesContent.slice(idx + captions.length).trim()
           : notesContent + `\n${captions}\n${mdEntry}\n`;
     } else {
       // Try VTT timestamp alignment
