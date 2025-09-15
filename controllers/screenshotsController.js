@@ -53,14 +53,14 @@ export function saveScreenshot(req, res) {
 
     // Insert into notes
     let notesContent = fs.readFileSync(notesFile, "utf-8");
-    const mdEntry = `\nTimestamp: ${timestamp}\n![Screenshot](/${cleanTitle}/${imageFile})\n\n`;
+    const mdEntry = `Timestamp: ${timestamp}\n![Screenshot](/${cleanTitle}/${imageFile})\n\n\n\n`;
 
     if (captions?.trim()) {
       const idx = notesContent.indexOf(captions);
       notesContent =
         idx !== -1
           ? notesContent.slice(0, idx + captions.length) +
-            "\n" +
+            "  \n" +
             mdEntry +
             "\n" +
             notesContent.slice(idx + captions.length)
