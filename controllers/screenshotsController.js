@@ -59,9 +59,10 @@ export function saveScreenshot(req, res) {
       const idx = notesContent.indexOf(captions);
       notesContent =
         idx !== -1
-          ? notesContent.slice(0, idx + captions.length) +
-            "  \n" +
+          ? notesContent.slice(0, idx) +
+            "\n" +
             mdEntry +
+            captions +
             "\n" +
             notesContent.slice(idx + captions.length).trim()
           : notesContent + `\n${captions}\n${mdEntry}\n`;
@@ -88,9 +89,10 @@ export function saveScreenshot(req, res) {
           const idx = notesContent.indexOf(matchedCaption);
           notesContent =
             idx !== -1
-              ? notesContent.slice(0, idx + matchedCaption.length) +
-                "  \n" +
+              ? notesContent.slice(0, idx) +
+                "\n" +
                 mdEntry +
+                matchedCaption +
                 "\n" +
                 notesContent.slice(idx + matchedCaption.length).trim()
               : notesContent + `\n${matchedCaption}\n${mdEntry}\n`;
