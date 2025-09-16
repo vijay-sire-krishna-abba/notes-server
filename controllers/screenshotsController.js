@@ -89,10 +89,10 @@ export function saveScreenshot(req, res) {
           notesContent =
             idx !== -1
               ? notesContent.slice(0, idx + matchedCaption.length) +
-                "\n" +
+                "  \n" +
                 mdEntry +
                 "\n" +
-                notesContent.slice(idx + matchedCaption.length)
+                notesContent.slice(idx + matchedCaption.length).trim()
               : notesContent + `\n${matchedCaption}\n${mdEntry}\n`;
         } else {
           notesContent += `\n${mdEntry}\n`;
