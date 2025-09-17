@@ -56,6 +56,7 @@ export function saveSubtitles(req, res) {
     // Prevent duplicate subtitles
     const notesContent = fs.readFileSync(notesFile, "utf-8");
     if (notesContent.includes("### Subtitles Extracted")) {
+      console.log("⚠️ Subtitles already exist in:", notesFile);
       return res.json({
         success: false,
         message: "Subtitles already exist",
@@ -75,6 +76,19 @@ export function saveSubtitles(req, res) {
     // Append subtitles
     const mdEntry = `\n${videoLength}\n\n### Subtitles Extracted\n${finalText}\n`;
     fs.appendFileSync(notesFile, mdEntry);
+
+    console.log("✅ Subtitles created:", notesFile);
+
+    const filePath = path.join(parentDir, "titles.md");
+
+    // Append cleanTitle to the file, with newline
+    fs.appendFile(filePath, cleanTitle + "\n", (err) => {
+      if (err) {
+        console.error("Error appending to file:", err);
+      } else {
+        console.log(`Appended to ${filePath}:`, cleanTitle);
+      }
+    });
 
     res.json({ success: true, saved: { vtt: vttFile, notes: notesFile } });
   } catch (err) {
