@@ -55,7 +55,7 @@ export function saveScreenshot(req, res) {
     let notesContent = fs.readFileSync(notesFile, "utf-8");
     const mdEntry = `![Screenshot](/${cleanTitle}/${imageFile})\n\n\n\n`;
 
-    // appending to screenshots folder files 
+    // appending to screenshots folder files
     const screenshotsFolder = path.join(parentDir, "screenshots-notes");
     const screenshotsFile = path.join(screenshotsFolder, `${cleanTitle}.md`);
     if (fs.existsSync(screenshotsFile)) {
@@ -76,7 +76,7 @@ export function saveScreenshot(req, res) {
       notesContent =
         idx !== -1
           ? notesContent.slice(0, idx) +
-            "\n" +
+            "\n\n" +
             mdEntry +
             captions +
             "\n" +
@@ -106,7 +106,7 @@ export function saveScreenshot(req, res) {
           notesContent =
             idx !== -1
               ? notesContent.slice(0, idx) +
-                "\n" +
+                "\n\n" +
                 mdEntry +
                 matchedCaption +
                 "\n" +
