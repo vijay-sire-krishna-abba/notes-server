@@ -53,7 +53,23 @@ export function saveScreenshot(req, res) {
 
     // Insert into notes
     let notesContent = fs.readFileSync(notesFile, "utf-8");
-    const mdEntry = `Timestamp: ${timestamp}\n![Screenshot](/${cleanTitle}/${imageFile})\n\n\n\n`;
+    const mdEntry = `![Screenshot](/${cleanTitle}/${imageFile})\n\n\n\n`;
+
+    // appending to screenshots folder files 
+    const screenshotsFolder = path.join(parentDir, "screenshots-notes");
+    const screenshotsFile = path.join(screenshotsFolder, `${cleanTitle}.md`);
+    if (fs.existsSync(screenshotsFile)) {
+      const screenshotMdEntry = `Timestamp: ${timestamp}\n![Screenshot](/${cleanTitle}/${imageFile})\n\n\n\n`;
+      // Append cleanTitle to the file, with newline
+      fs.appendFile(screenshotsFile, screenshotMdEntry + "\n", (err) => {
+        if (err) {
+          console.error("Error appending to file:", err);
+        } else {
+          console.log(`Appended to ${screenshotsFile}:`, screenshotMdEntry);
+        }
+      });
+      //
+    }
 
     if (captions?.trim()) {
       const idx = notesContent.indexOf(captions);

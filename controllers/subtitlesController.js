@@ -21,15 +21,18 @@ export function saveSubtitles(req, res) {
     const parentDir = path.join(ROOT_NOTES_DIR, cleanParent);
     const titleDir = path.join(parentDir, cleanTitle);
     const structuredNotes = path.join(parentDir, "structured-notes");
+    const screenshotsFolder = path.join(parentDir, "screenshots-notes");
 
     ensureDirExists(parentDir);
     ensureDirExists(titleDir);
     ensureDirExists(structuredNotes);
+    ensureDirExists(screenshotsFolder);
 
     // File paths
     const vttFile = path.join(titleDir, `${cleanTitle}.vtt`);
     const notesFile = path.join(titleDir, `${cleanTitle}.md`);
     const notesFileStructured = path.join(structuredNotes, `${cleanTitle}.md`);
+    const screenshotsFile = path.join(screenshotsFolder, `${cleanTitle}.md`);
 
     // Save raw VTT
     fs.writeFileSync(vttFile, content, "utf-8");
@@ -51,6 +54,10 @@ export function saveSubtitles(req, res) {
 
     if (!fs.existsSync(notesFile)) {
       fs.writeFileSync(notesFile, `# ${title} - ${videoLength}\n\n`);
+    }
+
+    if (!fs.existsSync(screenshotsFile)) {
+      fs.writeFileSync(screenshotsFile, `# ${title} - ${videoLength}\n\n`);
     }
 
     // Prevent duplicate subtitles
