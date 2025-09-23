@@ -5,7 +5,19 @@ import { sanitizeFilename, ensureDirExists } from "../utils/fileUtils.js";
 
 export function saveSubtitles(req, res) {
   try {
-    const { url, content, title, parentTitle, videoLength } = req.body;
+    const { url, content, title, parentTitle, videoLength, rootDirectory } =
+      req.body;
+
+    console.log(
+      JSON.stringify({
+        url,
+        content: content.slice(0, 20),
+        title,
+        parentTitle,
+        videoLength,
+        rootDirectory,
+      })
+    );
 
     if (!url || !content || !title || !parentTitle) {
       return res

@@ -10,7 +10,8 @@ import { parseVTT, vttTimeToSeconds } from "../utils/vttUtils.js";
 
 export function saveScreenshot(req, res) {
   try {
-    let { parentTitle, title, timestamp, screenshot, captions } = req.body;
+    let { parentTitle, title, timestamp, screenshot, captions, rootDirectory } =
+      req.body;
 
     console.log(
       JSON.stringify({
@@ -19,6 +20,7 @@ export function saveScreenshot(req, res) {
         timestamp,
         screenshot: screenshot.slice(0, 20),
         captions,
+        rootDirectory,
       })
     );
     if (!parentTitle || !title || !timestamp || !screenshot) {
