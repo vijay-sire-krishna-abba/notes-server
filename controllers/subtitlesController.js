@@ -38,7 +38,9 @@ export function saveSubtitles(req, res) {
     const cleanTitle = sanitizeFilename(title.toLowerCase());
 
     // Folder structure
-    const parentDir = path.join(ROOT_NOTES_DIR, cleanParent);
+    const parentDir = rootDirectory
+      ? path.join(ROOT_NOTES_DIR, rootDirectory, cleanParent)
+      : path.join(ROOT_NOTES_DIR, cleanParent);
     const titleDir = path.join(parentDir, cleanTitle);
     const structuredNotes = path.join(parentDir, "structured-notes");
     const screenshotsFolder = path.join(parentDir, "screenshots-notes");

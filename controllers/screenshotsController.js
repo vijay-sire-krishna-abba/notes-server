@@ -34,7 +34,9 @@ export function saveScreenshot(req, res) {
     const cleanTitle = sanitizeFilename(title.toLowerCase());
     const cleanTime = sanitizeFilename(timestamp);
 
-    const parentDir = path.join(ROOT_NOTES_DIR, cleanParent);
+    const parentDir = rootDirectory
+      ? path.join(ROOT_NOTES_DIR, rootDirectory, cleanParent)
+      : path.join(ROOT_NOTES_DIR, cleanParent);
     const titleDir = path.join(parentDir, cleanTitle);
     ensureDirExists(parentDir);
     ensureDirExists(titleDir);
