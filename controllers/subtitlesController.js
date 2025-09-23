@@ -5,8 +5,15 @@ import { sanitizeFilename, ensureDirExists } from "../utils/fileUtils.js";
 
 export function saveSubtitles(req, res) {
   try {
-    const { url, content, title, parentTitle, videoLength, rootDirectory } =
-      req.body;
+    const {
+      url,
+      content,
+      title,
+      parentTitle,
+      videoLength,
+      rootDirectory,
+      subtitlesType,
+    } = req.body;
 
     console.log(
       JSON.stringify({
@@ -16,6 +23,7 @@ export function saveSubtitles(req, res) {
         parentTitle,
         videoLength,
         rootDirectory,
+        subtitlesType,
       })
     );
 
