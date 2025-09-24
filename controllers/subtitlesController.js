@@ -111,7 +111,7 @@ export function saveSubtitles(req, res) {
     const filePath = path.join(parentDir, "titles.md");
 
     // Append cleanTitle to the file, with newline
-    fs.appendFile(filePath, cleanTitle + "\n", (err) => {
+    fs.appendFile(filePath, `${cleanTitle} ${subtitlesType}` + "\n", (err) => {
       if (err) {
         console.error("Error appending to file:", err);
       } else {
