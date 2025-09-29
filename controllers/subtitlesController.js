@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { ROOT_NOTES_DIR } from "../config/paths.js";
 import { sanitizeFilename, ensureDirExists } from "../utils/fileUtils.js";
+import getCurrentTime from "../utils/currentTime.js";
 
 export function saveSubtitles(req, res) {
   try {
@@ -106,6 +107,7 @@ export function saveSubtitles(req, res) {
     const mdEntry = `\n${videoLength}\n\n### Subtitles Extracted\n${finalText}\n`;
     fs.appendFileSync(notesFile, mdEntry);
 
+    console.log(getCurrentTime());
     console.log("✅ Subtitles created:", notesFile);
 
     const filePath = path.join(parentDir, "titles.md");
