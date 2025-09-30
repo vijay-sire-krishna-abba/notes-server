@@ -14,6 +14,7 @@ export function saveSubtitles(req, res) {
       videoLength,
       rootDirectory,
       subtitlesType,
+      sectionName,
     } = req.body;
 
     console.log(
@@ -25,26 +26,36 @@ export function saveSubtitles(req, res) {
         videoLength,
         rootDirectory,
         subtitlesType,
+        sectionName,
       })
     );
 
-    if (!url || !content || !title || !parentTitle) {
+    if (!url || !content || !title || !parentTitle || !sectionName) {
       return res
         .status(400)
-        .json({ error: "Missing url/content/title/parentTitle" });
+        .json({ error: "Missing url/content/title/parentTitle/section" });
     }
 
     // Safe names
     const cleanParent = sanitizeFilename(parentTitle.toLowerCase());
     const cleanTitle = sanitizeFilename(title.toLowerCase());
+    const cleanSection = sanitizeFilename(sectionName.toLowerCase());
 
     // Folder structure
     const parentDir = rootDirectory
       ? path.join(ROOT_NOTES_DIR, rootDirectory, cleanParent)
       : path.join(ROOT_NOTES_DIR, cleanParent);
-    const titleDir = path.join(parentDir, cleanTitle);
-    const structuredNotes = path.join(parentDir, "structured-notes");
-    const screenshotsFolder = path.join(parentDir, "screenshots-notes");
+    const titleDir = path.join(parentDir, cleanSection, cleanTitle);
+    const structuredNotes = path.join(
+      parentDir,
+      cleanSection,
+      "structured-notes"
+    );
+    const screenshotsFolder = path.join(
+      parentDir,
+      cleanSection,
+      "screenshots-notes"
+    );
 
     ensureDirExists(parentDir);
     ensureDirExists(titleDir);

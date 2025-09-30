@@ -14,8 +14,15 @@ import {
 
 export function saveScreenshot(req, res) {
   try {
-    let { parentTitle, title, timestamp, screenshot, captions, rootDirectory } =
-      req.body;
+    let {
+      parentTitle,
+      title,
+      timestamp,
+      screenshot,
+      captions,
+      rootDirectory,
+      sectionName,
+    } = req.body;
 
     console.log(
       JSON.stringify({
@@ -25,23 +32,25 @@ export function saveScreenshot(req, res) {
         screenshot: screenshot.slice(0, 20),
         captions,
         rootDirectory,
+        sectionName,
       })
     );
-    if (!parentTitle || !title || !timestamp || !screenshot) {
-      return res
-        .status(400)
-        .json({ error: "Missing title/timestamp/screenshot/parentTitle" });
+    if (!parentTitle || !title || !timestamp || !screenshot || !sectionName) {
+      return res.status(400).json({
+        error: "Missing title/timestamp/screenshot/parentTitle/section",
+      });
     }
 
     timestamp = normalizeTimestamp(timestamp);
     const cleanParent = sanitizeFilename(parentTitle.toLowerCase());
     const cleanTitle = sanitizeFilename(title.toLowerCase());
+    const cleanSection = sanitizeFilename(sectionName.toLowerCase());
     const cleanTime = sanitizeFilename(timestamp);
 
     const parentDir = rootDirectory
       ? path.join(ROOT_NOTES_DIR, rootDirectory, cleanParent)
       : path.join(ROOT_NOTES_DIR, cleanParent);
-    const titleDir = path.join(parentDir, cleanTitle);
+    const titleDir = path.join(parentDir, cleanSection, cleanTitle);
     ensureDirExists(parentDir);
     ensureDirExists(titleDir);
 
@@ -61,13 +70,17 @@ export function saveScreenshot(req, res) {
 
     // Insert into notes
     let notesContent = fs.readFileSync(notesFile, "utf-8");
-    const mdEntry = `\n\n![Screenshot](/${cleanTitle}/${imageFile})\n\n\n\n`;
+    const mdEntry = `\n\n![Screenshot](/${cleanSection}/${cleanTitle}/${imageFile})\n\n\n\n`;
 
     // appending to screenshots folder files
-    const screenshotsFolder = path.join(parentDir, "screenshots-notes");
+    const screenshotsFolder = path.join(
+      parentDir,
+      cleanSection,
+      "screenshots-notes"
+    );
     const screenshotsFile = path.join(screenshotsFolder, `${cleanTitle}.md`);
     if (fs.existsSync(screenshotsFile)) {
-      const screenshotMdEntry = `Timestamp: ${timestamp}\n![Screenshot](/${cleanTitle}/${imageFile})\n\n\n\n`;
+      const screenshotMdEntry = `Timestamp: ${timestamp}\n![Screenshot](/${cleanSection}/${cleanTitle}/${imageFile})\n\n\n\n`;
       // Append cleanTitle to the file, with newline
       fs.appendFile(screenshotsFile, screenshotMdEntry + "\n", (err) => {
         if (err) {
