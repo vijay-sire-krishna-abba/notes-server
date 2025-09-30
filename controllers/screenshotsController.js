@@ -6,7 +6,11 @@ import {
   normalizeTimestamp,
   ensureDirExists,
 } from "../utils/fileUtils.js";
-import { parseVTT, vttTimeToSeconds } from "../utils/vttUtils.js";
+import {
+  parseVTT,
+  vttTimeToSeconds,
+  findInsertPosition,
+} from "../utils/vttUtils.js";
 
 export function saveScreenshot(req, res) {
   try {
@@ -75,53 +79,69 @@ export function saveScreenshot(req, res) {
       //
     }
 
-    if (captions?.trim()) {
-      const idx = notesContent.indexOf(captions);
+    const vttFile = path.join(titleDir, `${cleanTitle}.vtt`);
+    let vttBlocks = [];
+    if (fs.existsSync(vttFile)) {
+      vttBlocks = parseVTT(fs.readFileSync(vttFile, "utf-8"));
+    }
+
+    if (captions?.trim() && captions.length > 15) {
+      const insertIdx = findInsertPosition(
+        notesContent,
+        timestamp,
+        captions,
+        vttBlocks
+      );
       notesContent =
-        idx !== -1
-          ? notesContent.slice(0, idx) +
+        notesContent.slice(0, insertIdx) +
+        `\n${mdEntry}\n` +
+        notesContent.slice(insertIdx);
+    } else if (vttBlocks.length) {
+      // Find closest block by timestamp
+      const screenshotTime = vttTimeToSeconds(timestamp);
+      let matchedBlock = null;
+      for (const b of vttBlocks) {
+        if (screenshotTime >= b.start) matchedBlock = b;
+        else break;
+      }
+      if (matchedBlock) {
+        const idx = notesContent.indexOf(matchedBlock.text);
+        if (idx !== -1) {
+          // Insert above the matched caption
+          notesContent =
+            notesContent.slice(0, idx) +
             "\n" +
             mdEntry +
-            captions +
-            "\n" +
-            notesContent.slice(idx + captions.length).trim()
-          : notesContent + `\n${captions}\n${mdEntry}\n`;
-    } else {
-      // Try VTT timestamp alignment
-      const vttFile = path.join(titleDir, `${cleanTitle}.vtt`);
-      if (fs.existsSync(vttFile)) {
-        const blocks = parseVTT(fs.readFileSync(vttFile, "utf-8"));
-        const screenshotTime = vttTimeToSeconds(
-          timestamp.includes(":") && timestamp.split(":").length === 2
-            ? "00:" + timestamp + ".000"
-            : timestamp.includes(".")
-            ? timestamp
-            : timestamp + ".000"
-        );
-
-        let matchedCaption = null;
-        for (const b of blocks) {
-          if (screenshotTime >= b.start) matchedCaption = b.text;
-          else break;
-        }
-
-        if (matchedCaption) {
-          const idx = notesContent.indexOf(matchedCaption);
-          notesContent =
-            idx !== -1
-              ? notesContent.slice(0, idx) +
+            notesContent.slice(idx);
+        } else {
+          // Try to find the next closest caption after the timestamp
+          let nextBlock = null;
+          for (const b of vttBlocks) {
+            if (b.start > screenshotTime) {
+              nextBlock = b;
+              break;
+            }
+          }
+          if (nextBlock) {
+            const nextIdx = notesContent.indexOf(nextBlock.text);
+            if (nextIdx !== -1) {
+              notesContent =
+                notesContent.slice(0, nextIdx) +
                 "\n" +
                 mdEntry +
-                matchedCaption +
-                "\n" +
-                notesContent.slice(idx + matchedCaption.length).trim()
-              : notesContent + `\n${matchedCaption}\n${mdEntry}\n`;
-        } else {
-          notesContent += `\n${mdEntry}\n`;
+                notesContent.slice(nextIdx);
+            } else {
+              notesContent += `\n${mdEntry}\n`;
+            }
+          } else {
+            notesContent += `\n${mdEntry}\n`;
+          }
         }
       } else {
         notesContent += `\n${mdEntry}\n`;
       }
+    } else {
+      notesContent += `\n${mdEntry}\n`;
     }
 
     fs.writeFileSync(notesFile, notesContent, "utf-8");
