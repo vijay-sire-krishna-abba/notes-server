@@ -10,7 +10,7 @@ import {
   parseVTT,
   vttTimeToSeconds,
   findInsertPosition,
-} from "../utils/vttUtils.js";
+} from "../utils/vttUtils-auto.js";
 
 export function saveScreenshot(req, res) {
   try {
