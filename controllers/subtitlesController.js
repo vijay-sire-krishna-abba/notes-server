@@ -36,6 +36,10 @@ export function saveSubtitles(req, res) {
         .json({ error: "Missing url/content/title/parentTitle/section" });
     }
 
+    if (url.includes("thumb-sprites.vtt")) {
+      return res.status(400).json({ error: "This url is not useful" });
+    }
+
     // Safe names
     const cleanParent = sanitizeFilename(parentTitle.toLowerCase());
     const cleanTitle = sanitizeFilename(title.toLowerCase());
@@ -67,9 +71,6 @@ export function saveSubtitles(req, res) {
     const notesFile = path.join(titleDir, `${cleanTitle}.md`);
     const notesFileStructured = path.join(structuredNotes, `${cleanTitle}.md`);
     const screenshotsFile = path.join(screenshotsFolder, `${cleanTitle}.md`);
-
-    // Save raw VTT
-    fs.writeFileSync(vttFile, content, "utf-8");
 
     // Process VTT → plain text
     const cleanLines = content
@@ -104,6 +105,9 @@ export function saveSubtitles(req, res) {
         notes: notesFile,
       });
     }
+
+    // Save raw VTT
+    fs.writeFileSync(vttFile, content, "utf-8");
 
     // Extra files
     fs.writeFileSync(
