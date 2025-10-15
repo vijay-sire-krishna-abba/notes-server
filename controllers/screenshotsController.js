@@ -11,8 +11,9 @@ import {
   vttTimeToSeconds,
   findInsertPosition,
 } from "../utils/vttUtils-auto.js";
+import sharp from "sharp"; // added to convert images
 
-export function saveScreenshot(req, res) {
+export async function saveScreenshot(req, res) {
   try {
     let {
       parentTitle,
@@ -56,13 +57,14 @@ export function saveScreenshot(req, res) {
 
     const imageFile = `${cleanTime}_${
       Math.floor(Math.random() * 900) + 100
-    }.jpeg`;
+    }.png`; // changed extension to .png
     const imagePath = path.join(titleDir, imageFile);
     const notesFile = path.join(titleDir, `${cleanTitle}.md`);
 
-    // Save screenshot
-    const base64Data = screenshot.replace(/^data:image\/jpeg;base64,/, "");
-    fs.writeFileSync(imagePath, Buffer.from(base64Data, "base64"));
+    // Save screenshot (convert incoming image to PNG to reduce size)
+    const base64Data = screenshot.replace(/^data:image\/\w+;base64,/, "");
+    const imgBuffer = Buffer.from(base64Data, "base64");
+    await sharp(imgBuffer).png({ compressionLevel: 9 }).toFile(imagePath);
 
     // Ensure notes.md exists
     if (!fs.existsSync(notesFile))
