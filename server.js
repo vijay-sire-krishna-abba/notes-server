@@ -9,6 +9,7 @@ const app = express();
 // Middlewares
 app.use(express.json({ limit: "50mb" }));
 app.use(cors()); // replaces manual CORS headers
+app.use(express.static("public"));
 
 // Routes
 app.use("/", subtitlesRoutes);

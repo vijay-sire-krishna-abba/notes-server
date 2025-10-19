@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filename Sanitizer</title>
+  </head>
+  <body>
+    <h1>Welcome</h1>
+    <label for="title-name-one">Title</label>
+    <input type="text" id="title-name-one" />
+
+    <p id="title-display-one"></p>
+
+    <script type="module">
+      function sanitizeFilename(filename) {
+        if (typeof filename !== "string") {
+          return "";
+        }
+
+        // Remove invalid characters for filenames
+        return (
+          filename
+            .toLowerCase()
+            // Replace spaces with hyphens
+            .replace(/\s+/g, "-")
+            // Remove invalid characters
+            .replace(/[<>:"/\\|?*]/g, "")
+            // Remove leading/trailing dots and spaces
+            .replace(/^[.\s]+|[.\s]+$/g, "")
+            // Limit length (optional)
+            .substring(0, 255)
+        );
+      }
+
+      const inputElement = document.getElementById("title-name-one");
+      const displayElement = document.getElementById("title-display-one");
+
+      inputElement.addEventListener("input", (event) => {
+        const originalValue = event.target.value;
+        const sanitizedValue = sanitizeFilename(originalValue);
+        displayElement.textContent = `Sanitized: ${sanitizedValue}`;
+      });
+    </script>
+  </body>
+</html>
