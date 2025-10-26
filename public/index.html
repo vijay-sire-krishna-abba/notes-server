@@ -39,7 +39,7 @@
       inputElement.addEventListener("input", (event) => {
         const originalValue = event.target.value;
         const sanitizedValue = sanitizeFilename(originalValue);
-        displayElement.textContent = `Sanitized: ${sanitizedValue}`;
+        displayElement.textContent = `${sanitizedValue}`;
       });
     </script>
   </body>

@@ -13,6 +13,8 @@ import {
 } from "../utils/vttUtils-auto.js";
 import sharp from "sharp"; // added to convert images
 
+let countNumber = 0;
+
 export async function saveScreenshot(req, res) {
   try {
     let {
@@ -58,7 +60,16 @@ export async function saveScreenshot(req, res) {
     const imageFile = `${cleanTime}_${
       Math.floor(Math.random() * 900) + 100
     }.png`; // changed extension to .png
-    const imagePath = path.join(titleDir, imageFile);
+
+    let imagePath;
+    if (title === "pdf" && sectionName === "pdf") {
+      const extra_piece = `${countNumber}`;
+      imagePath = path.join(titleDir, extra_piece + imageFile);
+      countNumber++;
+    } else {
+      imagePath = path.join(titleDir, imageFile);
+    }
+
     const notesFile = path.join(titleDir, `${cleanTitle}.md`);
 
     // Save screenshot (convert incoming image to PNG to reduce size)
